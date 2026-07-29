@@ -64,18 +64,22 @@
 <button id="addBtn">Add to Textarea</button>
 <button id="clearBtn">Clear Textarea</button>
 <span id="info" style="margin-left: 10px;"></span>
-<iframe id="output"></iframe>
+<iframe id="output" srcdoc="<!doctype html><html><body></body></html>"></iframe>
 <button onclick="runCode()">Run Code</button>
+<button id="resetIframeBtn">Reset Iframe</button>
 <script>
 function runCode() {
     const code = document.getElementById("code").value;
     const iframe = document.getElementById("output");
-
-    // Write the code into the iframe's document
-    iframe.contentWindow.document.open();
-    iframe.contentWindow.document.write(code);
-    iframe.contentWindow.document.close();
+    iframe.srcdoc = code || "<!doctype html><html><body></body></html>";
 }
+
+function resetIframe() {
+    const iframe = document.getElementById("output");
+    iframe.srcdoc = "<!doctype html><html><body></body></html>";
+}
+
+document.getElementById("resetIframeBtn").addEventListener("click", resetIframe);
     const options = [
         { value: "", text: "-- Select --" },
         { value: "<html>", text: "Open html" },
