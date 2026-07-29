@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>code easy</title>
+    <style>
+        #code{
+            height: 600px;
+            width: 600px;
+            position: absolute;
+            right: 5px;
+        }
+        #output{
+            height: 325px;
+            width: 450px;
+            position: absolute;
+            left: 5px;
+            bottom: 0px;
+        }
+    </style>
+</head>
+<body>
+    <textarea readonly id="code"></textarea>
+    
+<div id="selectArea">
+    <!-- Initial select -->
+    <div class="select-container">
+        <label>
+            Choose an option:
+            <select>
+                <option value="">-- Select --</option>
+                <option value="<html>">Open html</option>
+                <option value="</html>">Close html</option>
+                <option value="<head>">Open head</option>
+                <option value="</head>">Close head</option>
+                <option value="<body>">Open body</option>
+                <option value="</body>">Close body</option>
+                <option value="<button></button>">Button</option>
+                <option value="<input>">Input</option>
+                <option value="<div>">Open Div</option>
+                    <option value="</div>">close Div</option>
+                <option value="
+">Callback</option>
+            </select>
+        </label>
+    </div>
+</div>
+
+<!-- Button to add more selects -->
+<button id="addSelectBtn">Add Another tag</button>
+<label for="linkSelect">Link type:</label>
+<select id="linkSelect">
+    <option value="">-- Select --</option>
+    <option value="none">None</option>
+    <option value="google">Google</option>
+</select>
+<br>
+<label for="customTag">Custom tag:</label>
+<input id="customTag" type="text" placeholder="e.g. button">
+<label for="customUrl">Custom URL:</label>
+<input id="customUrl" type="text" placeholder="e.g. https://example.com">
+<br>
+<button id="addBtn">Add to Textarea</button>
+<button id="clearBtn">Clear Textarea</button>
+<span id="info" style="margin-left: 10px;"></span>
+<iframe id="output"></iframe>
+<button onclick="runCode()">Run Code</button>
+<script>
+function runCode() {
+    const code = document.getElementById("code").value;
+    const iframe = document.getElementById("output");
+
+    // Write the code into the iframe's document
+    iframe.contentWindow.document.open();
+    iframe.contentWindow.document.write(code);
+    iframe.contentWindow.document.close();
+}
+    const options = [
+        { value: "", text: "-- Select --" },
+        { value: "<html>", text: "Open html" },
+        { value: "</html>", text: "Close html" },
+        { value: "<head>", text: "Open head" },
+        { value: "</head>", text: "Close head" },
+        { value: "<body>", text: "Open body" },
+        { value: "</body>", text: "Close body" },
+        { value: "<button></button>", text: "Button" },
+        { value: "<input>", text: "Input" },
+        { value: "<div>", text: "Open Div" },
+        { value: "</div>", text: "Close Div" },
+        { value: "\n", text: "Callback" }
+    ];
+
+    function getCustomTagMarkup() {
+        const customTag = document.getElementById("customTag").value.trim();
+        return customTag ? `<${customTag}></${customTag}>` : "";
+    }
+
+    function getOptions() {
+        const currentOptions = [...options];
+        const customTagMarkup = getCustomTagMarkup();
+
+        if (customTagMarkup) {
+            const customTagName = document.getElementById("customTag").value.trim();
+            const alreadyExists = currentOptions.some(option => option.value === customTagMarkup);
+
+            if (!alreadyExists) {
+                currentOptions.push({
+                    value: customTagMarkup,
+                    text: `Custom: ${customTagName}`
+                });
+            }
+        }
+
+        return currentOptions;
+    }
+
+    function populateSelect(select) {
+        const currentValue = select.value;
+        select.innerHTML = "";
+
+        getOptions().forEach(opt => {
+            const option = document.createElement("option");
+            option.value = opt.value;
+            option.textContent = opt.text;
+            select.appendChild(option);
+        });
+
+        if (currentValue) {
+            select.value = currentValue;
+        }
+    }
+
+    function createSelect() {
+        const container = document.createElement("div");
+        container.className = "select-container";
+
+        const label = document.createElement("label");
+        label.textContent = "Choose an option: ";
+
+        const select = document.createElement("select");
+        populateSelect(select);
+
+        label.appendChild(select);
+        container.appendChild(label);
+        document.getElementById("selectArea").appendChild(container);
+    }
+
+    document.getElementById("addSelectBtn").addEventListener("click", function () {
+        try {
+            createSelect();
+        } catch (error) {
+            console.error("Error adding select:", error);
+        }
+    });
+
+    const linkSelect = document.getElementById("linkSelect");
+    const infoText = document.getElementById("info");
+    const linkMessages = {
+        none: "button X Google.",
+        google: "button O Google."
+    };
+
+    function getSelectedValues() {
+        return Array.from(document.querySelectorAll("#selectArea select"))
+            .map(select => select.value)
+            .filter(value => value);
+    }
+
+    function isLinkableTag(value) {
+        return value === "<button></button>" || value === getCustomTagMarkup();
+    }
+
+    function updateInfo() {
+        const values = getSelectedValues();
+        const hasLinkableTag = values.some(isLinkableTag);
+        const customUrl = document.getElementById("customUrl").value.trim();
+
+        if (hasLinkableTag && linkSelect.value === "google") {
+            infoText.textContent = linkMessages.google;
+        } else if (hasLinkableTag && (linkSelect.value === "none" || customUrl)) {
+            infoText.textContent = customUrl ? `Custom URL active: ${customUrl}` : linkMessages.none;
+        } else {
+            infoText.textContent = "";
+        }
+    }
+
+    document.getElementById("customTag").addEventListener("input", function () {
+        document.querySelectorAll("#selectArea select").forEach(populateSelect);
+        updateInfo();
+    });
+
+    document.getElementById("customUrl").addEventListener("input", updateInfo);
+    linkSelect.addEventListener("change", updateInfo);
+    document.getElementById("selectArea").addEventListener("change", function (event) {
+        if (event.target.tagName === "SELECT") {
+            updateInfo();
+        }
+    });
+
+    document.getElementById("addSelectBtn").addEventListener("click", function () {
+        createSelect();
+        updateInfo();
+    });
+
+    document.getElementById("addBtn").addEventListener("click", function () {
+        const textarea = document.getElementById("code");
+        const values = getSelectedValues();
+        const customTag = document.getElementById("customTag").value.trim();
+        const customUrl = document.getElementById("customUrl").value.trim();
+
+        if (values.length === 0) {
+            alert("Please select an option first.");
+            return;
+        }
+
+        const renderedValues = values.map(value => {
+            const shouldWrap = isLinkableTag(value) && (linkSelect.value === "google" || customUrl);
+
+            if (shouldWrap) {
+                const wrapUrl = customUrl || "https://google.com";
+                const tagMarkup = value === "<button></button>"
+                    ? "<button></button>"
+                    : `<${customTag}></${customTag}>`;
+
+                return `<a href="${wrapUrl}">\n ${tagMarkup}\n</a>`;
+            }
+
+            return value;
+        });
+
+        textarea.value += (textarea.value ? " " : "") + renderedValues.join(" ");
+        updateInfo();
+    });
+
+    document.getElementById("clearBtn").addEventListener("click", function () {
+        document.getElementById("code").value = "";
+    });
+
+    document.querySelectorAll("#selectArea select").forEach(populateSelect);
+    updateInfo();
+    </script>
+</body>
+</html>
