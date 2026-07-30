@@ -4,74 +4,304 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>code easy</title>
+    
     <style>
-        #code{
-            height: 600px;
-            width: 600px;
-            position: absolute;
-            right: 5px;
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
         }
-        #output{
+
+        #web-page {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            box-sizing: border-box;
+            padding: 12px;
+        }
+
+        .language-panel {
+            position: relative;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 24px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .language-panel.hidden {
+            display: none;
+        }
+
+        .file-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .language-panel textarea {
+            width: 100%;
+            max-width: 100%;
+            min-width: 280px;
+            height: 300px;
+            resize: vertical;
+            margin-bottom: 12px;
+            font-family: monospace;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .panel-menu {
+            display: grid;
+            gap: 8px;
+        }
+
+        .panel-menu label,
+        .panel-menu select,
+        .panel-menu input,
+        .panel-menu button {
+            font-size: 14px;
+        }
+
+        .download-btn {
+            width: fit-content;
+        }
+
+        #language-selector {
+            margin-bottom: 16px;
+        }
+
+        #output {
             height: 325px;
-            width: 450px;
-            position: absolute;
-            left: 5px;
-            bottom: 0px;
+            width: 100%;
+            max-width: 100%;
+            min-width: 280px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 900px) {
+            #web-page {
+                padding: 12px;
+            }
+
+            #html-code,
+            #css-code,
+            #js-code,
+            #output {
+                position: relative;
+                display: block;
+                width: 100%;
+                max-width: 100%;
+                min-width: 0;
+                left: auto;
+                right: auto;
+                top: auto;
+                bottom: auto;
+            }
+
+            #html-code {
+                height: 300px;
+                margin-bottom: 12px;
+            }
+
+            #output {
+                height: 250px;
+            }
         }
     </style>
 </head>
 <body>
-    <textarea readonly id="code"></textarea>
-    
-<div id="selectArea">
-    <!-- Initial select -->
-    <div class="select-container">
-        <label>
-            Choose an option:
-            <select>
-                <option value="">-- Select --</option>
-                <option value="<html>">Open html</option>
-                <option value="</html>">Close html</option>
-                <option value="<head>">Open head</option>
-                <option value="</head>">Close head</option>
-                <option value="<body>">Open body</option>
-                <option value="</body>">Close body</option>
-                <option value="<button></button>">Button</option>
-                <option value="<input>">Input</option>
-                <option value="<div>">Open Div</option>
-                    <option value="</div>">close Div</option>
-                <option value="
-">Callback</option>
-            </select>
-        </label>
-    </div>
-</div>
+    <div id="web-page">
+        <div id="language-selector">
+            <label>
+                Language:
+                <select id="language">
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="js">JS</option>
+                </select>
+            </label>
+        </div>
 
-<!-- Button to add more selects -->
-<button id="addSelectBtn">Add Another tag</button>
-<label for="linkSelect">Link type:</label>
-<select id="linkSelect">
-    <option value="">-- Select --</option>
-    <option value="none">None</option>
-    <option value="google">Google</option>
-</select>
-<br>
-<label for="customTag">Custom tag:</label>
-<input id="customTag" type="text" placeholder="e.g. button">
-<label for="customUrl">Custom URL:</label>
-<input id="customUrl" type="text" placeholder="e.g. https://example.com">
-<br>
-<button id="addBtn">Add to Textarea</button>
-<button id="clearBtn">Clear Textarea</button>
-<span id="info" style="margin-left: 10px;"></span>
-<iframe id="output" srcdoc="<!doctype html><html><body></body></html>"></iframe>
-<button onclick="runCode()">Run Code</button>
-<button id="resetIframeBtn">Reset Iframe</button>
+        <div class="language-panel active" id="panel-html" data-lang="html">
+            <div class="file-title">index.html</div>
+            <textarea id="html-code"></textarea>
+            <div class="panel-menu">
+                <div class="selectArea" id="selectArea-html">
+                    <div class="select-container">
+                        <label>
+                            Choose an option:
+                            <select>
+                                <option value="">-- Select --</option>
+                                <option value="<html>">Open html</option>
+                                <option value="</html>">Close html</option>
+                                <option value="<head>">Open head</option>
+                                <option value="</head>">Close head</option>
+                                <option value="<body>">Open body</option>
+                                <option value="</body>">Close body</option>
+                                <option value="<button></button>">Button</option>
+                                <option value="<input>">Input</option>
+                                <option value="<div>">Open Div</option>
+                                <option value="</div>">Close Div</option>
+                                <option value="\n">Callback</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <button class="addSelectBtn" data-lang="html">Add Another tag</button>
+                <label for="linkSelect-html">Link type:</label>
+                <select class="linkSelect" id="linkSelect-html">
+                    <option value="">-- Select --</option>
+                    <option value="none">None</option>
+                    <option value="google">Google</option>
+                </select>
+                <br>
+                <label for="customTag-html">Custom tag:</label>
+                <input class="customTag" id="customTag-html" type="text" placeholder="e.g. button">
+                <label for="customUrl-html">Custom URL:</label>
+                <input class="customUrl" id="customUrl-html" type="text" placeholder="e.g. https://example.com">
+                <br>
+                <button class="addBtn" data-lang="html">Add to Textarea</button>
+                <button class="clearBtn" data-lang="html">Clear Textarea</button>
+                <button class="download-btn" data-file="index.html" data-lang="html">Download index.html</button>
+                <span class="info"></span>
+            </div>
+        </div>
+
+        <div class="language-panel hidden" id="panel-css" data-lang="css">
+            <div class="file-title">style.css</div>
+            <textarea id="css-code"></textarea>
+            <div class="panel-menu">
+                <div class="selectArea" id="selectArea-css">
+                    <div class="select-container">
+                        <label>
+                            Choose an option:
+                            <select>
+                                <option value="">-- Select --</option>
+                                <option value="<html>">Open html</option>
+                                <option value="</html>">Close html</option>
+                                <option value="<head>">Open head</option>
+                                <option value="</head>">Close head</option>
+                                <option value="<body>">Open body</option>
+                                <option value="</body>">Close body</option>
+                                <option value="<button></button>">Button</option>
+                                <option value="<input>">Input</option>
+                                <option value="<div>">Open Div</option>
+                                <option value="</div>">Close Div</option>
+                                <option value="\n">Callback</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <button class="addSelectBtn" data-lang="css">Add Another tag</button>
+                <label for="linkSelect-css">Link type:</label>
+                <select class="linkSelect" id="linkSelect-css">
+                    <option value="">-- Select --</option>
+                    <option value="none">None</option>
+                    <option value="google">Google</option>
+                </select>
+                <br>
+                <label for="customTag-css">Custom tag:</label>
+                <input class="customTag" id="customTag-css" type="text" placeholder="e.g. button">
+                <label for="customUrl-css">Custom URL:</label>
+                <input class="customUrl" id="customUrl-css" type="text" placeholder="e.g. https://example.com">
+                <br>
+                <button class="addBtn" data-lang="css">Add to Textarea</button>
+                <button class="clearBtn" data-lang="css">Clear Textarea</button>
+                <button class="download-btn" data-file="style.css" data-lang="css">Download style.css</button>
+                <span class="info"></span>
+            </div>
+        </div>
+
+        <div class="language-panel hidden" id="panel-js" data-lang="js">
+            <div class="file-title">index.js</div>
+            <textarea id="js-code"></textarea>
+            <div class="panel-menu">
+                <div class="selectArea" id="selectArea-js">
+                    <div class="select-container">
+                        <label>
+                            Choose an option:
+                            <select>
+                                <option value="">-- Select --</option>
+                                <option value="<html>">Open html</option>
+                                <option value="</html>">Close html</option>
+                                <option value="<head>">Open head</option>
+                                <option value="</head>">Close head</option>
+                                <option value="<body>">Open body</option>
+                                <option value="</body>">Close body</option>
+                                <option value="<button></button>">Button</option>
+                                <option value="<input>">Input</option>
+                                <option value="<div>">Open Div</option>
+                                <option value="</div>">Close Div</option>
+                                <option value="\n">Callback</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+                <button class="addSelectBtn" data-lang="js">Add Another tag</button>
+                <label for="linkSelect-js">Link type:</label>
+                <select class="linkSelect" id="linkSelect-js">
+                    <option value="">-- Select --</option>
+                    <option value="none">None</option>
+                    <option value="google">Google</option>
+                </select>
+                <br>
+                <label for="customTag-js">Custom tag:</label>
+                <input class="customTag" id="customTag-js" type="text" placeholder="e.g. button">
+                <label for="customUrl-js">Custom URL:</label>
+                <input class="customUrl" id="customUrl-js" type="text" placeholder="e.g. https://example.com">
+                <br>
+                <button class="addBtn" data-lang="js">Add to Textarea</button>
+                <button class="clearBtn" data-lang="js">Clear Textarea</button>
+                <button class="download-btn" data-file="index.js" data-lang="js">Download index.js</button>
+                <span class="info"></span>
+            </div>
+        </div>
+
+        <iframe id="output" srcdoc="<!doctype html><html><body></body></html>"></iframe>
+        <button onclick="runCode()">Run Code</button>
+        <button id="resetIframeBtn">Reset Iframe</button>
+    </div>
 <script>
 function runCode() {
-    const code = document.getElementById("code").value;
+    const htmlCode = document.getElementById("html-code").value;
+    const cssCode = document.getElementById("css-code").value;
+    const jsCode = document.getElementById("js-code").value;
     const iframe = document.getElementById("output");
-    iframe.srcdoc = code || "<!doctype html><html><body></body></html>";
+
+    const cssLinkRegex = /<link\s+[^>]*rel=["']stylesheet["'][^>]*href=["']style\.css["'][^>]*>/gi;
+    const styleHrefRegex = /<style\s+[^>]*href=["']style\.css["'][^>]*>([\s\S]*?)<\/style>/gi;
+    const scriptSrcRegex = /<script\s+[^>]*src=["']index\.js["'][^>]*><\/script>/gi;
+
+    let renderedHtml = htmlCode;
+    renderedHtml = renderedHtml.replace(cssLinkRegex, `<style>${cssCode}</style>`);
+    renderedHtml = renderedHtml.replace(styleHrefRegex, `<style>${cssCode}</style>`);
+    renderedHtml = renderedHtml.replace(scriptSrcRegex, `<script>${jsCode}<\\/script>`);
+
+    const hasHead = /<head[\s>]/i.test(renderedHtml);
+    const hasBodyClose = /<\/body>/i.test(renderedHtml);
+
+    if (!cssLinkRegex.test(htmlCode) && !styleHrefRegex.test(htmlCode) && cssCode.trim()) {
+        if (hasHead) {
+            renderedHtml = renderedHtml.replace(/<\/head>/i, `<style>${cssCode}</style></head>`);
+        } else if (hasBodyClose) {
+            renderedHtml = renderedHtml.replace(/<\/body>/i, `<style>${cssCode}</style></body>`);
+        } else {
+            renderedHtml += `<style>${cssCode}</style>`;
+        }
+    }
+
+    if (!scriptSrcRegex.test(htmlCode) && jsCode.trim()) {
+        if (hasBodyClose) {
+            renderedHtml = renderedHtml.replace(/<\/body>/i, `<script>${jsCode}<\\/script></body>`);
+        } else {
+            renderedHtml += `<script>${jsCode}<\\/script>`;
+        }
+    }
+
+    iframe.srcdoc = renderedHtml || "<!doctype html><html><body></body></html>";
 }
 
 function resetIframe() {
@@ -80,138 +310,146 @@ function resetIframe() {
 }
 
 document.getElementById("resetIframeBtn").addEventListener("click", resetIframe);
-    const options = [
-        { value: "", text: "-- Select --" },
-        { value: "<html>", text: "Open html" },
-        { value: "</html>", text: "Close html" },
-        { value: "<head>", text: "Open head" },
-        { value: "</head>", text: "Close head" },
-        { value: "<body>", text: "Open body" },
-        { value: "</body>", text: "Close body" },
-        { value: "<button></button>", text: "Button" },
-        { value: "<input>", text: "Input" },
-        { value: "<div>", text: "Open Div" },
-        { value: "</div>", text: "Close Div" },
-        { value: "\n", text: "Callback" }
-    ];
 
-    function getCustomTagMarkup() {
-        const customTag = document.getElementById("customTag").value.trim();
-        return customTag ? `<${customTag}></${customTag}>` : "";
-    }
+const options = [
+    { value: "", text: "-- Select --" },
+    { value: "<html>", text: "Open html" },
+    { value: "</html>", text: "Close html" },
+    { value: "<head>", text: "Open head" },
+    { value: "</head>", text: "Close head" },
+    { value: "<body>", text: "Open body" },
+    { value: "</body>", text: "Close body" },
+    { value: "<button></button>", text: "Button" },
+    { value: "<input>", text: "Input" },
+    { value: "<div>", text: "Open Div" },
+    { value: "</div>", text: "Close Div" },
+    { value: "\n", text: "Callback" }
+];
 
-    function getOptions() {
-        const currentOptions = [...options];
-        const customTagMarkup = getCustomTagMarkup();
+function setLanguage(lang) {
+    document.querySelectorAll(".language-panel").forEach(panel => {
+        panel.classList.toggle("hidden", panel.dataset.lang !== lang);
+    });
+}
 
-        if (customTagMarkup) {
-            const customTagName = document.getElementById("customTag").value.trim();
-            const alreadyExists = currentOptions.some(option => option.value === customTagMarkup);
+function getCustomTagMarkup(panel) {
+    const customTag = panel.querySelector(".customTag").value.trim();
+    return customTag ? `<${customTag}></${customTag}>` : "";
+}
 
-            if (!alreadyExists) {
-                currentOptions.push({
-                    value: customTagMarkup,
-                    text: `Custom: ${customTagName}`
-                });
-            }
-        }
+function getOptions(panel) {
+    const currentOptions = [...options];
+    const customTagMarkup = getCustomTagMarkup(panel);
 
-        return currentOptions;
-    }
+    if (customTagMarkup) {
+        const customTagName = panel.querySelector(".customTag").value.trim();
+        const alreadyExists = currentOptions.some(option => option.value === customTagMarkup);
 
-    function populateSelect(select) {
-        const currentValue = select.value;
-        select.innerHTML = "";
-
-        getOptions().forEach(opt => {
-            const option = document.createElement("option");
-            option.value = opt.value;
-            option.textContent = opt.text;
-            select.appendChild(option);
-        });
-
-        if (currentValue) {
-            select.value = currentValue;
+        if (!alreadyExists) {
+            currentOptions.push({
+                value: customTagMarkup,
+                text: `Custom: ${customTagName}`
+            });
         }
     }
 
-    function createSelect() {
-        const container = document.createElement("div");
-        container.className = "select-container";
+    return currentOptions;
+}
 
-        const label = document.createElement("label");
-        label.textContent = "Choose an option: ";
+function populateSelect(select) {
+    const panel = select.closest(".language-panel");
+    const currentValue = select.value;
+    select.innerHTML = "";
 
-        const select = document.createElement("select");
-        populateSelect(select);
-
-        label.appendChild(select);
-        container.appendChild(label);
-        document.getElementById("selectArea").appendChild(container);
-    }
-
-    document.getElementById("addSelectBtn").addEventListener("click", function () {
-        try {
-            createSelect();
-        } catch (error) {
-            console.error("Error adding select:", error);
-        }
+    getOptions(panel).forEach(opt => {
+        const option = document.createElement("option");
+        option.value = opt.value;
+        option.textContent = opt.text;
+        select.appendChild(option);
     });
 
-    const linkSelect = document.getElementById("linkSelect");
-    const infoText = document.getElementById("info");
+    if (currentValue) {
+        select.value = currentValue;
+    }
+}
+
+function createSelect(panel) {
+    const container = document.createElement("div");
+    container.className = "select-container";
+
+    const label = document.createElement("label");
+    label.textContent = "Choose an option: ";
+
+    const select = document.createElement("select");
+    populateSelect(select);
+
+    label.appendChild(select);
+    container.appendChild(label);
+    panel.querySelector(".selectArea").appendChild(container);
+}
+
+function getSelectedValues(panel) {
+    return Array.from(panel.querySelectorAll(".selectArea select"))
+        .map(select => select.value)
+        .filter(value => value);
+}
+
+function isLinkableTag(value, panel) {
+    return value === "<button></button>" || value === getCustomTagMarkup(panel);
+}
+
+function updateInfo(panel) {
+    const values = getSelectedValues(panel);
+    const hasLinkableTag = values.some(value => isLinkableTag(value, panel));
+    const customUrl = panel.querySelector(".customUrl").value.trim();
+    const linkSelect = panel.querySelector(".linkSelect");
+    const infoText = panel.querySelector(".info");
     const linkMessages = {
         none: "button X Google.",
         google: "button O Google."
     };
 
-    function getSelectedValues() {
-        return Array.from(document.querySelectorAll("#selectArea select"))
-            .map(select => select.value)
-            .filter(value => value);
+    if (hasLinkableTag && linkSelect.value === "google") {
+        infoText.textContent = linkMessages.google;
+    } else if (hasLinkableTag && (linkSelect.value === "none" || customUrl)) {
+        infoText.textContent = customUrl ? `Custom URL active: ${customUrl}` : linkMessages.none;
+    } else {
+        infoText.textContent = "";
     }
+}
 
-    function isLinkableTag(value) {
-        return value === "<button></button>" || value === getCustomTagMarkup();
-    }
+function initializePanel(panel) {
+    panel.querySelectorAll(".selectArea select").forEach(populateSelect);
 
-    function updateInfo() {
-        const values = getSelectedValues();
-        const hasLinkableTag = values.some(isLinkableTag);
-        const customUrl = document.getElementById("customUrl").value.trim();
-
-        if (hasLinkableTag && linkSelect.value === "google") {
-            infoText.textContent = linkMessages.google;
-        } else if (hasLinkableTag && (linkSelect.value === "none" || customUrl)) {
-            infoText.textContent = customUrl ? `Custom URL active: ${customUrl}` : linkMessages.none;
-        } else {
-            infoText.textContent = "";
-        }
-    }
-
-    document.getElementById("customTag").addEventListener("input", function () {
-        document.querySelectorAll("#selectArea select").forEach(populateSelect);
-        updateInfo();
+    panel.querySelector(".customTag").addEventListener("input", function () {
+        panel.querySelectorAll(".selectArea select").forEach(populateSelect);
+        updateInfo(panel);
     });
 
-    document.getElementById("customUrl").addEventListener("input", updateInfo);
-    linkSelect.addEventListener("change", updateInfo);
-    document.getElementById("selectArea").addEventListener("change", function (event) {
+    panel.querySelector(".customUrl").addEventListener("input", function () {
+        updateInfo(panel);
+    });
+
+    panel.querySelector(".linkSelect").addEventListener("change", function () {
+        updateInfo(panel);
+    });
+
+    panel.querySelector(".selectArea").addEventListener("change", function (event) {
         if (event.target.tagName === "SELECT") {
-            updateInfo();
+            updateInfo(panel);
         }
     });
 
-    document.getElementById("addSelectBtn").addEventListener("click", function () {
-        createSelect();
-        updateInfo();
+    panel.querySelector(".addSelectBtn").addEventListener("click", function () {
+        createSelect(panel);
+        updateInfo(panel);
     });
 
-    document.getElementById("addBtn").addEventListener("click", function () {
-        const textarea = document.getElementById("code");
-        const values = getSelectedValues();
-        const customTag = document.getElementById("customTag").value.trim();
-        const customUrl = document.getElementById("customUrl").value.trim();
+    panel.querySelector(".addBtn").addEventListener("click", function () {
+        const textarea = panel.querySelector("textarea");
+        const values = getSelectedValues(panel);
+        const customTag = panel.querySelector(".customTag").value.trim();
+        const customUrl = panel.querySelector(".customUrl").value.trim();
 
         if (values.length === 0) {
             alert("Please select an option first.");
@@ -219,30 +457,48 @@ document.getElementById("resetIframeBtn").addEventListener("click", resetIframe)
         }
 
         const renderedValues = values.map(value => {
-            const shouldWrap = isLinkableTag(value) && (linkSelect.value === "google" || customUrl);
-
+            const shouldWrap = isLinkableTag(value, panel) && (panel.querySelector(".linkSelect").value === "google" || customUrl);
             if (shouldWrap) {
                 const wrapUrl = customUrl || "https://google.com";
                 const tagMarkup = value === "<button></button>"
                     ? "<button></button>"
                     : `<${customTag}></${customTag}>`;
-
                 return `<a href="${wrapUrl}">\n ${tagMarkup}\n</a>`;
             }
-
             return value;
         });
 
         textarea.value += (textarea.value ? " " : "") + renderedValues.join(" ");
-        updateInfo();
+        updateInfo(panel);
     });
 
-    document.getElementById("clearBtn").addEventListener("click", function () {
-        document.getElementById("code").value = "";
+    panel.querySelector(".clearBtn").addEventListener("click", function () {
+        panel.querySelector("textarea").value = "";
     });
 
-    document.querySelectorAll("#selectArea select").forEach(populateSelect);
-    updateInfo();
-    </script>
-</body>
+    panel.querySelector(".download-btn").addEventListener("click", function () {
+        const textarea = panel.querySelector("textarea");
+        const fileName = this.dataset.file || "file.txt";
+        const blob = new Blob([textarea.value], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    });
+
+    updateInfo(panel);
+}
+
+const languageSelect = document.getElementById("language");
+languageSelect.addEventListener("change", function () {
+    setLanguage(this.value);
+});
+
+document.querySelectorAll(".language-panel").forEach(initializePanel);
+setLanguage(languageSelect.value);
+</script></body>
 </html>
