@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -169,6 +168,7 @@
                                 <option value="">-- Select --</option>
                                 <option value="<html>">Open html</option>
                                 <option value="</html>">Close html</option>
+                                <option value="\n">Callback</option>
                                 <option value="<head>">Open head</option>
                                 <option value="</head>">Close head</option>
                                 <option value="<body>">Open body</option>
@@ -177,7 +177,6 @@
                                 <option value="<input>">Input</option>
                                 <option value="<div>">Open Div</option>
                                 <option value="</div>">Close Div</option>
-                                <option value="\n">Callback</option>
                             </select>
                         </label>
                     </div>
@@ -212,11 +211,13 @@
                             Choose an option:
                             <select class="tag-select">
                                 <option value="">-- Select --</option>
+                                <option value="\n">Callback</option>
+                                <option value="@media screen and (max-width: 768px) {\n  \n}">media query</option>
                                 <option value="button{\n\n}">button</option>
                                 <option value="input{\n\n}">input</option>
                                 <option value="body{\n\n}">body</option>
                                 <option value="div{\n\n}">div</option>
-                                <option value="\n">Callback</option>
+                                <option value="@keyframes myAnimation {\n  \n}">keyframes</option>
                             </select>
                         </label>
                     </div>
@@ -242,10 +243,11 @@
                             Choose an option:
                             <select class="tag-select">
                                 <option value="">-- Select --</option>
+                                <option value="\n">Callback</option>
                                 <option value="function myFunction() {\n  \n}">Function</option>
                                 <option value="console.log('');">console.log</option>
                                 <option value="document.querySelector('');">Query selector</option>
-                                <option value="\n">Callback</option>
+                                
                             </select>
                         </label>
                     </div>
@@ -316,6 +318,7 @@ const optionsByLanguage = {
     html: [
         { value: "", text: "-- Select --", id: "" },
         { value: "<html>", text: "Open html", id: "" },
+        { value: "\n", text: "Callback", id: "" },
         { value: "</html>", text: "Close html", id: "" },
         { value: "<head>", text: "Open head", id: "" },
         { value: "</head>", text: "Close head", id: "" },
@@ -324,23 +327,29 @@ const optionsByLanguage = {
         { value: "<button></button>", text: "Button", id: "" },
         { value: "<input>", text: "Input", id: "" },
         { value: "<div>", text: "Open Div", id: "" },
-        { value: "</div>", text: "Close Div", id: "" },
-        { value: "\n", text: "Callback", id: "" }
+        { value: "</div>", text: "Close Div", id: "" }
+        
     ],
     css: [
-        { value: "", text: "-- Select --",},
+        
+        { value: "", text: "-- Select --"},
+        { value: "\n", text: "Callback" },
+        { value: "@media screen and (max-width: 768px) {\n  \n}", text: "Media Query" },
         { value: "body {\n  \n}", text: "Body" },
         { value: "div {\n  \n}", text: "Div" },
         { value: "button {\n  \n}", text: "Button" },
         { value: "input {\n  \n}", text: "Input" },
-        { value: "\n", text: "Callback" }
+        
+        { value: "@keyframes myAnimation {\n  \n}", text: "Keyframes" }
+        
     ],
     js: [
         { value: "", text: "-- Select --" },
+        { value: "\n", text: "Callback" },
         { value: "function myFunction() {\n  \n}", text: "Function" },
         { value: "console.log('Hello');", text: "Console log" },
-        { value: "document.querySelector('');", text: "Query selector" },
-        { value: "\n", text: "Callback" }
+        { value: "document.querySelector('');", text: "Query selector" }
+        
     ]
 };
 
@@ -454,11 +463,31 @@ function getCustomizationSchema(panel, value) {
     if (panel.dataset.lang === "css") {
         const normalized = String(value).trim();
         if (!normalized || normalized === "\n") return null;
-        return {
-            kind: "css-rule",
-            propertyLabel: "Property",
-            valueLabel: "Value"
-        };
+
+        if (normalized.startsWith("@media")) {
+            return {
+                kind: "media-query",
+                selectorLabel: "Selector",
+                breakpointLabel: "Breakpoint"
+            };
+        }
+
+        if (normalized.startsWith("@keyframes")) {
+            return {
+                kind: "keyframes",
+                animationTypeLabel: "Animation type"
+            };
+        }
+
+        if (normalized.includes("{")) {
+            return {
+                kind: "css-rule",
+                propertyLabel: "Property",
+                valueLabel: "Value"
+            };
+        }
+
+        return null;
     }
 
     if (panel.dataset.lang === "js") {
@@ -573,6 +602,43 @@ function updateCustomizationControls(container, select) {
         textInput.dataset.role = "content";
         textLabel.appendChild(textInput);
         controls.appendChild(textLabel);
+    } else if (schema.kind === "media-query") {
+        const selectorLabel = document.createElement("label");
+        selectorLabel.textContent = "Selector:";
+        const selectorInput = document.createElement("input");
+        selectorInput.type = "text";
+        selectorInput.placeholder = "e.g. body, button, input, div";
+        selectorInput.dataset.role = "selector";
+        selectorLabel.appendChild(selectorInput);
+        controls.appendChild(selectorLabel);
+
+        const breakpointLabel = document.createElement("label");
+        breakpointLabel.textContent = "Breakpoint:";
+        const breakpointInput = document.createElement("input");
+        breakpointInput.type = "text";
+        breakpointInput.placeholder = "e.g. 768px";
+        breakpointInput.dataset.role = "breakpoint";
+        breakpointLabel.appendChild(breakpointInput);
+        controls.appendChild(breakpointLabel);
+    } else if (schema.kind === "keyframes") {
+        const typeLabel = document.createElement("label");
+        typeLabel.textContent = "Animation type:";
+        const typeSelect = document.createElement("select");
+        typeSelect.dataset.role = "animation-type";
+
+        [
+            { value: "color", text: "Color loop" },
+            { value: "movement", text: "Movement loop" },
+            { value: "size", text: "Size loop" }
+        ].forEach(optionData => {
+            const option = document.createElement("option");
+            option.value = optionData.value;
+            option.textContent = optionData.text;
+            typeSelect.appendChild(option);
+        });
+
+        typeLabel.appendChild(typeSelect);
+        controls.appendChild(typeLabel);
     } else if (schema.kind === "css-rule") {
         const propertyLabel = document.createElement("label");
         propertyLabel.textContent = "Property:";
@@ -647,6 +713,8 @@ function getSelectCustomization(select) {
         body: controls.querySelector("[data-role='body']")?.value.trim() || "",
         message: controls.querySelector("[data-role='message']")?.value.trim() || "",
         selector: controls.querySelector("[data-role='selector']")?.value.trim() || "",
+        breakpoint: controls.querySelector("[data-role='breakpoint']")?.value.trim() || "",
+        animationType: controls.querySelector("[data-role='animation-type']")?.value || "",
         id: controls.querySelector("[data-role='id']")?.value.trim() || ""
     };
 }
@@ -686,6 +754,28 @@ function renderSelectedValue(value, select, panel) {
         }
 
         const customization = getSelectCustomization(select);
+        const schema = getCustomizationSchema(panel, value);
+
+        if (schema?.kind === "media-query") {
+            const selector = customization.selector || "body, button, input, div, p, span, h1, h2, h3, h4, h5, h6";
+            const breakpoint = customization.breakpoint || "768px";
+            return `@media screen and (max-width: ${breakpoint}) {\n  ${selector} {\n    width: 100%;\n    max-width: 100%;\n    height: auto;\n    box-sizing: border-box;\n  }\n}`;
+        }
+
+        if (schema?.kind === "keyframes") {
+            const animationType = customization.animationType || "color";
+
+            if (animationType === "movement") {
+                return `@keyframes myAnimation {\n  0% { transform: translate(0, 0); }\n  25% { transform: translate(60px, -40px); }\n  50% { transform: translate(120px, 0); }\n  75% { transform: translate(60px, 40px); }\n  100% { transform: translate(0, 0); }\n}`;
+            }
+
+            if (animationType === "size") {
+                return `@keyframes myAnimation {\n  0%, 100% { transform: scale(1); }\n  50% { transform: scale(1.2); }\n}`;
+            }
+
+            return `@keyframes myAnimation {\n  0% { background-color: rgb(255, 0, 0); }\n  33% { background-color: rgb(0, 255, 0); }\n  66% { background-color: rgb(0, 0, 255); }\n  100% { background-color: rgb(255, 0, 0); }\n}`;
+        }
+
         const propertyName = customization.property || "color";
         const propertyValue = customization.value || "red";
         const selector = String(value).trim().split("{")[0].trim() || "body";
