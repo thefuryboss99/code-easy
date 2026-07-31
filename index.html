@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,6 +62,37 @@
         .panel-menu input,
         .panel-menu button {
             font-size: 14px;
+        }
+
+        .select-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .customization-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .customization-controls.hidden {
+            display: none;
+        }
+
+        .customization-controls label {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 13px;
+        }
+
+        .customization-controls input,
+        .customization-controls select {
+            min-width: 140px;
         }
 
         .download-btn {
@@ -133,7 +165,7 @@
                     <div class="select-container">
                         <label>
                             Choose an option:
-                            <select>
+                            <select class="tag-select">
                                 <option value="">-- Select --</option>
                                 <option value="<html>">Open html</option>
                                 <option value="</html>">Close html</option>
@@ -178,35 +210,20 @@
                     <div class="select-container">
                         <label>
                             Choose an option:
-                            <select>
+                            <select class="tag-select">
                                 <option value="">-- Select --</option>
-                                <option value="<html>">Open html</option>
-                                <option value="</html>">Close html</option>
-                                <option value="<head>">Open head</option>
-                                <option value="</head>">Close head</option>
-                                <option value="<body>">Open body</option>
-                                <option value="</body>">Close body</option>
-                                <option value="<button></button>">Button</option>
-                                <option value="<input>">Input</option>
-                                <option value="<div>">Open Div</option>
-                                <option value="</div>">Close Div</option>
+                                <option value="button{\n\n}">button</option>
+                                <option value="input{\n\n}">input</option>
+                                <option value="body{\n\n}">body</option>
+                                <option value="div{\n\n}">div</option>
                                 <option value="\n">Callback</option>
                             </select>
                         </label>
                     </div>
                 </div>
                 <button class="addSelectBtn" data-lang="css">Add Another tag</button>
-                <label for="linkSelect-css">Link type:</label>
-                <select class="linkSelect" id="linkSelect-css">
-                    <option value="">-- Select --</option>
-                    <option value="none">None</option>
-                    <option value="google">Google</option>
-                </select>
-                <br>
-                <label for="customTag-css">Custom tag:</label>
-                <input class="customTag" id="customTag-css" type="text" placeholder="e.g. button">
-                <label for="customUrl-css">Custom URL:</label>
-                <input class="customUrl" id="customUrl-css" type="text" placeholder="e.g. https://example.com">
+                <label for="customTag-css">Custom CSS:</label>
+                <input class="customTag" id="customTag-css" type="text" placeholder="e.g. body { color: red; }">
                 <br>
                 <button class="addBtn" data-lang="css">Add to Textarea</button>
                 <button class="clearBtn" data-lang="css">Clear Textarea</button>
@@ -223,35 +240,19 @@
                     <div class="select-container">
                         <label>
                             Choose an option:
-                            <select>
+                            <select class="tag-select">
                                 <option value="">-- Select --</option>
-                                <option value="<html>">Open html</option>
-                                <option value="</html>">Close html</option>
-                                <option value="<head>">Open head</option>
-                                <option value="</head>">Close head</option>
-                                <option value="<body>">Open body</option>
-                                <option value="</body>">Close body</option>
-                                <option value="<button></button>">Button</option>
-                                <option value="<input>">Input</option>
-                                <option value="<div>">Open Div</option>
-                                <option value="</div>">Close Div</option>
+                                <option value="function myFunction() {\n  \n}">Function</option>
+                                <option value="console.log('');">console.log</option>
+                                <option value="document.querySelector('');">Query selector</option>
                                 <option value="\n">Callback</option>
                             </select>
                         </label>
                     </div>
                 </div>
                 <button class="addSelectBtn" data-lang="js">Add Another tag</button>
-                <label for="linkSelect-js">Link type:</label>
-                <select class="linkSelect" id="linkSelect-js">
-                    <option value="">-- Select --</option>
-                    <option value="none">None</option>
-                    <option value="google">Google</option>
-                </select>
-                <br>
-                <label for="customTag-js">Custom tag:</label>
-                <input class="customTag" id="customTag-js" type="text" placeholder="e.g. button">
-                <label for="customUrl-js">Custom URL:</label>
-                <input class="customUrl" id="customUrl-js" type="text" placeholder="e.g. https://example.com">
+                <label for="customTag-js">Custom JS:</label>
+                <input class="customTag" id="customTag-js" type="text" placeholder="e.g. console.log('Hello');">
                 <br>
                 <button class="addBtn" data-lang="js">Add to Textarea</button>
                 <button class="clearBtn" data-lang="js">Clear Textarea</button>
@@ -311,20 +312,37 @@ function resetIframe() {
 
 document.getElementById("resetIframeBtn").addEventListener("click", resetIframe);
 
-const options = [
-    { value: "", text: "-- Select --" },
-    { value: "<html>", text: "Open html" },
-    { value: "</html>", text: "Close html" },
-    { value: "<head>", text: "Open head" },
-    { value: "</head>", text: "Close head" },
-    { value: "<body>", text: "Open body" },
-    { value: "</body>", text: "Close body" },
-    { value: "<button></button>", text: "Button" },
-    { value: "<input>", text: "Input" },
-    { value: "<div>", text: "Open Div" },
-    { value: "</div>", text: "Close Div" },
-    { value: "\n", text: "Callback" }
-];
+const optionsByLanguage = {
+    html: [
+        { value: "", text: "-- Select --", id: "" },
+        { value: "<html>", text: "Open html", id: "" },
+        { value: "</html>", text: "Close html", id: "" },
+        { value: "<head>", text: "Open head", id: "" },
+        { value: "</head>", text: "Close head", id: "" },
+        { value: "<body>", text: "Open body", id: "" },
+        { value: "</body>", text: "Close body", id: "" },
+        { value: "<button></button>", text: "Button", id: "" },
+        { value: "<input>", text: "Input", id: "" },
+        { value: "<div>", text: "Open Div", id: "" },
+        { value: "</div>", text: "Close Div", id: "" },
+        { value: "\n", text: "Callback", id: "" }
+    ],
+    css: [
+        { value: "", text: "-- Select --",},
+        { value: "body {\n  \n}", text: "Body" },
+        { value: "div {\n  \n}", text: "Div" },
+        { value: "button {\n  \n}", text: "Button" },
+        { value: "input {\n  \n}", text: "Input" },
+        { value: "\n", text: "Callback" }
+    ],
+    js: [
+        { value: "", text: "-- Select --" },
+        { value: "function myFunction() {\n  \n}", text: "Function" },
+        { value: "console.log('Hello');", text: "Console log" },
+        { value: "document.querySelector('');", text: "Query selector" },
+        { value: "\n", text: "Callback" }
+    ]
+};
 
 function setLanguage(lang) {
     document.querySelectorAll(".language-panel").forEach(panel => {
@@ -334,11 +352,24 @@ function setLanguage(lang) {
 
 function getCustomTagMarkup(panel) {
     const customTag = panel.querySelector(".customTag").value.trim();
-    return customTag ? `<${customTag}></${customTag}>` : "";
+    if (!customTag) return "";
+
+    const lang = panel.dataset.lang;
+    if (lang === "html") {
+        const normalizedTag = customTag.trim().toLowerCase();
+        const voidElements = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"]);
+        if (voidElements.has(normalizedTag)) {
+            return `<${customTag}>`;
+        }
+        return `<${customTag}></${customTag}>`;
+    }
+
+    return customTag;
 }
 
 function getOptions(panel) {
-    const currentOptions = [...options];
+    const lang = panel.dataset.lang || "html";
+    const currentOptions = [...(optionsByLanguage[lang] || optionsByLanguage.html)];
     const customTagMarkup = getCustomTagMarkup(panel);
 
     if (customTagMarkup) {
@@ -365,6 +396,9 @@ function populateSelect(select) {
         const option = document.createElement("option");
         option.value = opt.value;
         option.textContent = opt.text;
+        if (opt.id) {
+            option.id = opt.id;
+        }
         select.appendChild(option);
     });
 
@@ -372,6 +406,317 @@ function populateSelect(select) {
         select.value = currentValue;
     }
 }
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+function escapeAttribute(value) {
+    return escapeHtml(value).replace(/"/g, "&quot;");
+}
+
+function getTagNameFromValue(value) {
+    const match = value.match(/^<\s*([a-zA-Z0-9-]+)/);
+    if (!match) return "";
+    return match[1].toLowerCase();
+}
+
+function getCustomizationSchema(panel, value) {
+    if (!panel || !value) return null;
+
+    if (panel.dataset.lang === "html") {
+        const tagName = getTagNameFromValue(value);
+        if (!tagName) return null;
+
+        if (tagName === "input") {
+            return {
+                kind: "input",
+                inputTypes: ["text", "password", "email", "number", "checkbox", "radio", "submit", "button"],
+                contentLabel: "Text/value",
+                idLabel: "ID"
+            };
+        }
+
+        if (["button", "div", "p", "span", "h1", "h2", "h3", "h4", "h5", "h6"].includes(tagName)) {
+            return {
+                kind: "text",
+                contentLabel: "Text content",
+                idLabel: "ID"
+            };
+        }
+
+        return null;
+    }
+
+    if (panel.dataset.lang === "css") {
+        const normalized = String(value).trim();
+        if (!normalized || normalized === "\n") return null;
+        return {
+            kind: "css-rule",
+            propertyLabel: "Property",
+            valueLabel: "Value"
+        };
+    }
+
+    if (panel.dataset.lang === "js") {
+        const normalized = String(value).trim();
+        if (!normalized || normalized === "\n") return null;
+
+        if (normalized.includes("function")) {
+            return {
+                kind: "function",
+                nameLabel: "Function name",
+                bodyLabel: "Body"
+            };
+        }
+
+        if (normalized.includes("console.log")) {
+            return {
+                kind: "console-log",
+                messageLabel: "Message"
+            };
+        }
+
+        if (normalized.includes("querySelector")) {
+            return {
+                kind: "query-selector",
+                selectorLabel: "Selector"
+            };
+        }
+
+        return null;
+    }
+
+    return null;
+}
+
+function createCustomizationControls(container, select) {
+    const existingControls = container.querySelector(".customization-controls");
+    if (existingControls) {
+        existingControls.remove();
+    }
+
+    const controls = document.createElement("div");
+    controls.className = "customization-controls hidden";
+    container.appendChild(controls);
+
+    return controls;
+}
+
+function updateCustomizationControls(container, select) {
+    const controls = container.querySelector(".customization-controls") || createCustomizationControls(container, select);
+    controls.innerHTML = "";
+
+    const panel = select.closest(".language-panel");
+    const schema = getCustomizationSchema(panel, select.value);
+
+    if (!schema) {
+        controls.classList.add("hidden");
+        return;
+    }
+
+    controls.classList.remove("hidden");
+
+    if (schema.kind === "input") {
+        const typeLabel = document.createElement("label");
+        typeLabel.textContent = "Input type:";
+        const typeSelect = document.createElement("select");
+        typeSelect.dataset.role = "input-type";
+        schema.inputTypes.forEach(type => {
+            const option = document.createElement("option");
+            option.value = type;
+            option.textContent = type;
+            typeSelect.appendChild(option);
+        });
+        typeLabel.appendChild(typeSelect);
+        controls.appendChild(typeLabel);
+
+        if (schema.idLabel) {
+            const idLabel = document.createElement("label");
+            idLabel.textContent = `${schema.idLabel}:`;
+            const idInput = document.createElement("input");
+            idInput.type = "text";
+            idInput.placeholder = "e.g. submitBtn";
+            idInput.dataset.role = "id";
+            idLabel.appendChild(idInput);
+            controls.appendChild(idLabel);
+        }
+
+        const valueLabel = document.createElement("label");
+        valueLabel.textContent = "Text/value:";
+        const valueInput = document.createElement("input");
+        valueInput.type = "text";
+        valueInput.placeholder = "e.g. Submit";
+        valueInput.dataset.role = "content";
+        valueLabel.appendChild(valueInput);
+        controls.appendChild(valueLabel);
+    } else if (schema.kind === "text") {
+        if (schema.idLabel) {
+            const idLabel = document.createElement("label");
+            idLabel.textContent = `${schema.idLabel}:`;
+            const idInput = document.createElement("input");
+            idInput.type = "text";
+            idInput.placeholder = "e.g. heroTitle";
+            idInput.dataset.role = "id";
+            idLabel.appendChild(idInput);
+            controls.appendChild(idLabel);
+        }
+
+        const textLabel = document.createElement("label");
+        textLabel.textContent = "Text content:";
+        const textInput = document.createElement("input");
+        textInput.type = "text";
+        textInput.placeholder = "e.g. Hello";
+        textInput.dataset.role = "content";
+        textLabel.appendChild(textInput);
+        controls.appendChild(textLabel);
+    } else if (schema.kind === "css-rule") {
+        const propertyLabel = document.createElement("label");
+        propertyLabel.textContent = "Property:";
+        const propertyInput = document.createElement("input");
+        propertyInput.type = "text";
+        propertyInput.placeholder = "e.g. color";
+        propertyInput.dataset.role = "property";
+        propertyLabel.appendChild(propertyInput);
+        controls.appendChild(propertyLabel);
+
+        const valueLabel = document.createElement("label");
+        valueLabel.textContent = "Value:";
+        const valueInput = document.createElement("input");
+        valueInput.type = "text";
+        valueInput.placeholder = "e.g. red";
+        valueInput.dataset.role = "value";
+        valueLabel.appendChild(valueInput);
+        controls.appendChild(valueLabel);
+    } else if (schema.kind === "function") {
+        const nameLabel = document.createElement("label");
+        nameLabel.textContent = "Function name:";
+        const nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.placeholder = "e.g. greet";
+        nameInput.dataset.role = "name";
+        nameLabel.appendChild(nameInput);
+        controls.appendChild(nameLabel);
+
+        const bodyLabel = document.createElement("label");
+        bodyLabel.textContent = "Body:";
+        const bodyInput = document.createElement("input");
+        bodyInput.type = "text";
+        bodyInput.placeholder = "e.g. console.log('Hello');";
+        bodyInput.dataset.role = "body";
+        bodyLabel.appendChild(bodyInput);
+        controls.appendChild(bodyLabel);
+    } else if (schema.kind === "console-log") {
+        const messageLabel = document.createElement("label");
+        messageLabel.textContent = "Message:";
+        const messageInput = document.createElement("input");
+        messageInput.type = "text";
+        messageInput.placeholder = "e.g. Hello";
+        messageInput.dataset.role = "message";
+        messageLabel.appendChild(messageInput);
+        controls.appendChild(messageLabel);
+    } else if (schema.kind === "query-selector") {
+        const selectorLabel = document.createElement("label");
+        selectorLabel.textContent = "Selector:";
+        const selectorInput = document.createElement("input");
+        selectorInput.type = "text";
+        selectorInput.placeholder = "e.g. body";
+        selectorInput.dataset.role = "selector";
+        selectorLabel.appendChild(selectorInput);
+        controls.appendChild(selectorLabel);
+    }
+}
+
+function getSelectCustomization(select) {
+    const container = select.closest(".select-container");
+    const controls = container ? container.querySelector(".customization-controls") : null;
+
+    if (!controls || controls.classList.contains("hidden")) {
+        return {};
+    }
+
+    return {
+        inputType: controls.querySelector("[data-role='input-type']")?.value || "",
+        content: controls.querySelector("[data-role='content']")?.value.trim() || "",
+        property: controls.querySelector("[data-role='property']")?.value.trim() || "",
+        value: controls.querySelector("[data-role='value']")?.value.trim() || "",
+        name: controls.querySelector("[data-role='name']")?.value.trim() || "",
+        body: controls.querySelector("[data-role='body']")?.value.trim() || "",
+        message: controls.querySelector("[data-role='message']")?.value.trim() || "",
+        selector: controls.querySelector("[data-role='selector']")?.value.trim() || "",
+        id: controls.querySelector("[data-role='id']")?.value.trim() || ""
+    };
+}
+
+function renderSelectedValue(value, select, panel) {
+    if (panel.dataset.lang === "html") {
+        const tagName = getTagNameFromValue(value);
+        const customization = getSelectCustomization(select);
+        const idAttribute = customization.id ? ` id="${escapeAttribute(customization.id)}"` : "";
+
+        if (tagName === "input") {
+            const inputType = customization.inputType || "text";
+            const inputValue = customization.content || "";
+            return inputValue
+                ? `<input${idAttribute} type="${inputType}" value="${escapeAttribute(inputValue)}">`
+                : `<input${idAttribute} type="${inputType}">`;
+        }
+
+        if (["button", "div", "p", "span", "h1", "h2", "h3", "h4", "h5", "h6"].includes(tagName)) {
+            const content = customization.content || "";
+            const text = escapeHtml(content);
+            if (tagName === "button") {
+                return `<button${idAttribute}>${text}</button>`;
+            }
+            return `<${tagName}${idAttribute}>${text}</${tagName}>`;
+        }
+
+        if (tagName && value.startsWith("<") && !value.startsWith("</")) {
+            return `<${tagName}${idAttribute}>`;
+        }
+    }
+
+    if (panel.dataset.lang === "css") {
+        const rawValue = String(value);
+        if (rawValue === "\n") {
+            return "\n";
+        }
+
+        const customization = getSelectCustomization(select);
+        const propertyName = customization.property || "color";
+        const propertyValue = customization.value || "red";
+        const selector = String(value).trim().split("{")[0].trim() || "body";
+        return `${selector} {\n  ${propertyName}: ${propertyValue};\n}`;
+    }
+
+    if (panel.dataset.lang === "js") {
+        const customization = getSelectCustomization(select);
+        const normalized = String(value).trim();
+
+        if (normalized.includes("function")) {
+            const functionName = customization.name || "myFunction";
+            const functionBody = customization.body || "console.log('Hello');";
+            return `function ${functionName}() {\n  ${functionBody}\n}`;
+        }
+
+        if (normalized.includes("console.log")) {
+            const message = customization.message || "Hello";
+            return `console.log('${message}');`;
+        }
+
+        if (normalized.includes("querySelector")) {
+            const selectorName = customization.selector || "body";
+            return `document.querySelector('${selectorName}');`;
+        }
+    }
+
+    return value;
+}
+
+window.renderSelectedValue = renderSelectedValue;
 
 function createSelect(panel) {
     const container = document.createElement("div");
@@ -381,29 +726,44 @@ function createSelect(panel) {
     label.textContent = "Choose an option: ";
 
     const select = document.createElement("select");
-    populateSelect(select);
+    select.className = "tag-select";
 
     label.appendChild(select);
     container.appendChild(label);
     panel.querySelector(".selectArea").appendChild(container);
+
+    populateSelect(select);
+
+    updateCustomizationControls(container, select);
+    select.addEventListener("change", function () {
+        updateCustomizationControls(container, select);
+        updateInfo(panel);
+    });
 }
 
 function getSelectedValues(panel) {
-    return Array.from(panel.querySelectorAll(".selectArea select"))
+    return Array.from(panel.querySelectorAll(".selectArea .tag-select"))
         .map(select => select.value)
         .filter(value => value);
 }
 
 function isLinkableTag(value, panel) {
-    return value === "<button></button>" || value === getCustomTagMarkup(panel);
+    return panel.dataset.lang === "html" && (value === "<button></button>" || value === getCustomTagMarkup(panel));
 }
 
 function updateInfo(panel) {
     const values = getSelectedValues(panel);
-    const hasLinkableTag = values.some(value => isLinkableTag(value, panel));
-    const customUrl = panel.querySelector(".customUrl").value.trim();
-    const linkSelect = panel.querySelector(".linkSelect");
     const infoText = panel.querySelector(".info");
+
+    if (panel.dataset.lang !== "html") {
+        infoText.textContent = "";
+        return;
+    }
+
+    const hasLinkableTag = values.some(value => isLinkableTag(value, panel));
+    const customUrlInput = panel.querySelector(".customUrl");
+    const customUrl = customUrlInput ? customUrlInput.value.trim() : "";
+    const linkSelect = panel.querySelector(".linkSelect");
     const linkMessages = {
         none: "button X Google.",
         google: "button O Google."
@@ -419,23 +779,39 @@ function updateInfo(panel) {
 }
 
 function initializePanel(panel) {
-    panel.querySelectorAll(".selectArea select").forEach(populateSelect);
+    panel.querySelectorAll(".selectArea .tag-select").forEach(select => {
+        populateSelect(select);
+        updateCustomizationControls(select.closest(".select-container"), select);
+        select.addEventListener("change", function () {
+            updateCustomizationControls(select.closest(".select-container"), select);
+            updateInfo(panel);
+        });
+    });
 
     panel.querySelector(".customTag").addEventListener("input", function () {
-        panel.querySelectorAll(".selectArea select").forEach(populateSelect);
+        panel.querySelectorAll(".selectArea .tag-select").forEach(select => {
+            populateSelect(select);
+            updateCustomizationControls(select.closest(".select-container"), select);
+        });
         updateInfo(panel);
     });
 
-    panel.querySelector(".customUrl").addEventListener("input", function () {
-        updateInfo(panel);
-    });
+    const customUrlField = panel.querySelector(".customUrl");
+    if (customUrlField) {
+        customUrlField.addEventListener("input", function () {
+            updateInfo(panel);
+        });
+    }
 
-    panel.querySelector(".linkSelect").addEventListener("change", function () {
-        updateInfo(panel);
-    });
+    const linkSelectField = panel.querySelector(".linkSelect");
+    if (linkSelectField) {
+        linkSelectField.addEventListener("change", function () {
+            updateInfo(panel);
+        });
+    }
 
     panel.querySelector(".selectArea").addEventListener("change", function (event) {
-        if (event.target.tagName === "SELECT") {
+        if (event.target.tagName === "SELECT" && !event.target.classList.contains("tag-select")) {
             updateInfo(panel);
         }
     });
@@ -447,25 +823,31 @@ function initializePanel(panel) {
 
     panel.querySelector(".addBtn").addEventListener("click", function () {
         const textarea = panel.querySelector("textarea");
-        const values = getSelectedValues(panel);
+        const selects = Array.from(panel.querySelectorAll(".selectArea .tag-select"));
+        const values = selects.map(select => select.value).filter(value => value);
         const customTag = panel.querySelector(".customTag").value.trim();
-        const customUrl = panel.querySelector(".customUrl").value.trim();
+        const customUrlField = panel.querySelector(".customUrl");
+        const customUrl = customUrlField ? customUrlField.value.trim() : "";
+        const linkSelectField = panel.querySelector(".linkSelect");
 
         if (values.length === 0) {
             alert("Please select an option first.");
             return;
         }
 
-        const renderedValues = values.map(value => {
-            const shouldWrap = isLinkableTag(value, panel) && (panel.querySelector(".linkSelect").value === "google" || customUrl);
-            if (shouldWrap) {
-                const wrapUrl = customUrl || "https://google.com";
-                const tagMarkup = value === "<button></button>"
-                    ? "<button></button>"
-                    : `<${customTag}></${customTag}>`;
-                return `<a href="${wrapUrl}">\n ${tagMarkup}\n</a>`;
+        const renderedValues = values.map((value, index) => {
+            const select = selects[index];
+            if (panel.dataset.lang === "html") {
+                const shouldWrap = isLinkableTag(value, panel) && (linkSelectField && (linkSelectField.value === "google" || customUrl));
+                if (shouldWrap) {
+                    const wrapUrl = customUrl || "https://google.com";
+                    const tagMarkup = value === "<button></button>"
+                        ? "<button></button>"
+                        : `<${customTag}></${customTag}>`;
+                    return `<a href="${wrapUrl}">\n ${tagMarkup}\n</a>`;
+                }
             }
-            return value;
+            return renderSelectedValue(value, select, panel);
         });
 
         textarea.value += (textarea.value ? " " : "") + renderedValues.join(" ");
